@@ -132,9 +132,13 @@ class TFARunner(BaseRunner):
       for _ in range(0, num_episodes):
         state = self._unwrapped_runtime.reset()
         is_terminal = False
+        if state[-1] == 1:
+            print("Now Ego-car will change the lane")
+        else:
+            print("Now Ego-car will stay on the original lane")
         while not is_terminal:
           action_step = self._agent._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
-          print("State: {}".format(state))
+          # print("State: {}".format(state))
           # TODO(@hart); make generic for multi agent planning
           state, _, is_terminal, _ = self._unwrapped_runtime.step(action_step.action.numpy())
           self._unwrapped_runtime.render()
