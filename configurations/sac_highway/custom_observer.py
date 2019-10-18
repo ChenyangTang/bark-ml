@@ -13,17 +13,21 @@ class CustomObserver(SimpleObserver):
                             params)
     self._perform_lane_change = False
     self._observation_len = \
-      self._max_num_vehicles*self._len_state + 1
+      self._max_num_vehicles*self._len_state + 2
 
   def observe(self, world, agents_to_observe):
     extended_state = super(CustomObserver, self).observe(world, agents_to_observe)
-    extended_state[-1] = self._params["ML"]["Maneuver"]["lane_change"]
+    extended_state[-2] = self._params["ML"]["Maneuver"]["lane_change"]
+    extended_state[-1] = self._params["ML"]["Maneuver"]["slow_down"]
     return extended_state
 
   def reset(self, world, agents_to_observe):
     super(CustomObserver, self).reset(world, agents_to_observe)
-    rn = np.random.randint(0, 2)
+    #rn = np.random.randint(0, 2)
+    rn = 0
+    sd = np.random.randint(0, 2)
     self._params["ML"]["Maneuver"]["lane_change",
       "Whether a lane change should be performed or not.",
        rn] = rn
+    self._params["ML"]["Maneuver"]["slow_down"] = sd
     return world
