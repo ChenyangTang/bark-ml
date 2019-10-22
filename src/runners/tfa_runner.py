@@ -133,15 +133,15 @@ class TFARunner(BaseRunner):
         state = self._unwrapped_runtime.reset()
         is_terminal = False
         #print(state)
-        #if state[-2] == 1:
-            #print("Now Ego-car will change the lane")
-        #else:
-            #print("Now Ego-car will stay on the original lane")
+        if state[-2] == 1 and state[-1] == 1:
+            print("Now Ego-car will change the lane and slow down")
+        elif state[-2] == 0 and state[-1] == 1:
+            print("Now Ego-car will stay on the original lane and slow down")
 
-        if state[-1] == 1:
-            print("Now Ego-car will slow down")
+        elif state[-2] == 1 and state[-1] == 0:
+            print("Now Ego-car will change the lane and keep the speed")
         else:
-            print("Now Ego-car will keep the speed")
+            print("Now Ego-car will stay on the original lane and keep the speed")
         while not is_terminal:
           action_step = self._agent._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
           #print("State: {}".format(state))

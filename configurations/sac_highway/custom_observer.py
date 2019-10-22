@@ -23,8 +23,8 @@ class CustomObserver(SimpleObserver):
 
   def reset(self, world, agents_to_observe):
     super(CustomObserver, self).reset(world, agents_to_observe)
-    #rn = np.random.randint(0, 2)
-    rn = 0
+    rn = np.random.randint(0, 2)
+    #rn = 0
     sd = np.random.randint(0, 2)
     self._params["ML"]["Maneuver"]["lane_change",
       "Whether a lane change should be performed or not.",
