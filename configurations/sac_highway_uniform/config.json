@@ -168,12 +168,12 @@
           "batch_size": 256,
           "buffer_num_steps": 2,
           "buffer_prefetch": 3,
-          "checkpoint_path": "/home/hart/Dokumente/2019/bark-ml/configurations/sac_highway_uniform/checkpoints/"
+          "checkpoint_path": "/home/tang/bark-ml/configurations/sac_highway_uniform/checkpoints/"
       },
       "Evaluator": {
           "max_steps": 60,
           "collision_penalty": -1.0,
-          "goal_reward": 100.0
+          "goal_reward": 10.0
       },
       "Observer": {
           "velocity_range": [0, 30],
@@ -185,9 +185,9 @@
           "number_of_collections": 100000,
           "initial_collection_steps": 100,
           "collection_episodes_per_cycle": 1,
-          "evaluate_every_n_steps": 1000,
+          "evaluate_every_n_steps": 100,
           "evaluation_steps": 25,
-          "summary_path": "/home/hart/Dokumente/2019/bark-ml/configurations/sac_highway_uniform/summaries/"
+          "summary_path": "/home/tang/bark-ml/configurations/sac_highway_uniform/summaries/"
       },
       "DynamicModel": {
           "action_dimension": 2,
