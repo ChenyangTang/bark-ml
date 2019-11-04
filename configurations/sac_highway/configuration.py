@@ -69,6 +69,7 @@ class SACHighwayConfiguration(BaseConfiguration):
                              self._agent,
                              params=self._params,
                              unwrapped_runtime=self._runtime)
+                             
 
 def run_configuration(argv):
   params = ParameterServer(filename="configurations/sac_highway/config.json")

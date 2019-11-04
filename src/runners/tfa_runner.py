@@ -16,6 +16,7 @@ from tf_agents.trajectories import time_step as ts
 from src.runners.base_runner import BaseRunner
 
 
+
 logger = logging.getLogger()
 # NOTE(@hart): this will print all statements
 # logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
@@ -118,6 +119,8 @@ class TFARunner(BaseRunner):
     tf.summary.scalar("mean_steps",
                       self._eval_metrics[1].result().numpy(),
                       step=global_iteration)
+    # suc_time = self._params["ML"]["Maneuver"]["success"]
+    # print("success2 = {}".format(str(suc_time)))
     logger.info(
       "The agent achieved on average {} reward and {} steps in \
       {} episodes." \
@@ -128,20 +131,28 @@ class TFARunner(BaseRunner):
   def visualize(self, num_episodes=1):
     # Ticket (https://github.com/tensorflow/agents/issues/59) recommends
     # to do the rendering in the original environment
+    # from configuration import SACHighwayConfiguration
     if self._unwrapped_runtime is not None:
       for _ in range(0, num_episodes):
         state = self._unwrapped_runtime.reset()
         is_terminal = False
-        #print(state)
-        if state[-2] == 1 and state[-1] == 1:
-            print("Now Ego-car will change the lane and slow down")
-        elif state[-2] == 0 and state[-1] == 1:
-            print("Now Ego-car will stay on the original lane and slow down")
-
-        elif state[-2] == 1 and state[-1] == 0:
-            print("Now Ego-car will change the lane and keep the speed")
+        suc_time = self._params["ML"]["Maneuver"]["success"]
+        # print("success3 = {}".format(str(suc_time)))
+        # print(state)
+        if self._params["ML"]["Maneuver"]["lane_change"] == 1:
+          print("Now Ego-car will change the lane")
         else:
-            print("Now Ego-car will stay on the original lane and keep the speed")
+          print("Now Ego-car will stay on the original lane")
+
+        #if state[-2] == 1 and state[-1] == 1:
+            #print("Now Ego-car will change the lane and slow down")
+        #elif state[-2] == 0 and state[-1] == 1:
+            #print("Now Ego-car will stay on the original lane and slow down")
+
+        #elif state[-2] == 1 and state[-1] == 0:
+            #print("Now Ego-car will change the lane and keep the speed")
+        #else:
+            #print("Now Ego-car will stay on the original lane and keep the speed")
         while not is_terminal:
           action_step = self._agent._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
           #print("State: {}".format(state))

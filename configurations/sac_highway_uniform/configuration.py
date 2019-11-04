@@ -3,8 +3,13 @@ from absl import flags
 import tensorflow as tf
 from tf_agents.environments import tf_py_environment
 
+import sys
+sys.path.append("/home/tang/bark/modules/runtime/scenario/scenario_generation")
+
 from modules.runtime.scenario.scenario_generation.uniform_vehicle_distribution \
   import UniformVehicleDistribution
+from uniform_vehicle_distribution_lane_change \
+  import UniformVehicleDistributionLaneChange
 from modules.runtime.scenario.scenario_generation.deterministic \
   import DeterministicScenarioGeneration
 from modules.runtime.commons.parameters import ParameterServer
@@ -23,7 +28,7 @@ from configurations.base_configuration import BaseConfiguration
 
 # configuration specific evaluator
 from configurations.sac_highway_uniform.custom_evaluator import CustomEvaluator
-from configurations.sac_highway_uniform.custom_observer import CustomObserver
+from custom_observer import CustomObserver
 
 FLAGS = flags.FLAGS
 flags.DEFINE_enum('mode',
@@ -43,13 +48,23 @@ class SACHighwayConfiguration(BaseConfiguration):
   def _build_configuration(self):
     """Builds a configuration using an SAC agent
     """
-    self._scenario_generator = \
-      UniformVehicleDistribution(num_scenarios=20,
-                                 random_seed=0,
-                                 params=self._params)
+    if self._params["ML"]["Maneuver"]["lane_change"] == 1:
+
+      self._scenario_generator = \
+        UniformVehicleDistributionLaneChange(num_scenarios=20,
+                                  random_seed=0,
+                                  params=self._params)
+    else:
+      self._scenario_generator = \
+        UniformVehicleDistribution(num_scenarios=20,
+                                  random_seed=0,
+                                  params=self._params)
+
     self._observer = CustomObserver(params=self._params)
     self._behavior_model = DynamicModel(params=self._params)
     self._evaluator = CustomEvaluator(params=self._params)
+
+    
 
     self._viewer  = MPViewer(params=self._params,
                             x_range=[-20,20],

@@ -43,9 +43,10 @@ class CustomEvaluator(GoalReached):
     
 
     lane_change = \
-    self._params["ML"]["Maneuver"]["lane_change"]
+      self._params["ML"]["Maneuver"]["lane_change"]
     if lane_change == 1:
       agent_xy = Point2d(agent.state[1] + 4., agent.state[2])
+      
     else:
       agent_xy = Point2d(agent.state[1], agent.state[2])
     return distance(centerline, agent_xy)

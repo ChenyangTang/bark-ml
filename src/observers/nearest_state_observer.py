@@ -1,4 +1,3 @@
-
 from gym import spaces
 import numpy as np
 from bark.models.dynamic import StateDefinition
@@ -56,6 +55,10 @@ class ClosestAgentsObserver(StateObserver):
     concatenated_state[0:self._len_ego_state] = \
       self._select_state_by_index(self._norm(ego_state)) 
     
+    #rn = np.random.randint(0, 2)
+    #self._params["ML"]["Maneuver"]["lane_change"] = rn
+    #concatenated_state[-1] = rn
+
     # add max number of agents to state concatenation vector
     concat_pos = self._len_relative_agent_state
     nearest_distances = sorted(nearest_distances.items(),
@@ -76,6 +79,8 @@ class ClosestAgentsObserver(StateObserver):
             np.zeros(self._len_relative_agent_state)
       concat_pos += self._len_relative_agent_state
     return concatenated_state
+
+    
 
   @property
   def observation_space(self):
@@ -116,3 +121,7 @@ class ClosestAgentsObserver(StateObserver):
   @property
   def _len_ego_state(self):
     return len(self._state_definition)
+ 
+
+   
+   

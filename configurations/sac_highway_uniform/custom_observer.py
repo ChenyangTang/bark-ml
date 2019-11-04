@@ -5,15 +5,17 @@ import math
 import operator
 from src.commons.spaces import BoundedContinuous, Discrete
 
-from src.observers.simple_observer import SimpleObserver
+from src.observers.nearest_state_observer import ClosestAgentsObserver
+# from configuration import SACHighwayConfiguration
 
-class CustomObserver(SimpleObserver):
+class CustomObserver(ClosestAgentsObserver):
   def __init__(self, params=ParameterServer()):
-    SimpleObserver.__init__(self,
+    ClosestAgentsObserver.__init__(self,
                             params)
     self._perform_lane_change = False
     self._observation_len = \
-      self._max_num_vehicles*self._len_state + 1
+      self._len_ego_state + \
+        self._max_num_vehicles*self._len_relative_agent_state + 1
 
   def observe(self, world, agents_to_observe):
     extended_state = super(CustomObserver, self).observe(world, agents_to_observe)
@@ -26,8 +28,6 @@ class CustomObserver(SimpleObserver):
     rn = np.random.randint(0, 2)
     # rn = 0
     # sd = np.random.randint(0, 2)
-    self._params["ML"]["Maneuver"]["lane_change",
-      "Whether a lane change should be performed or not.",
-       rn] = rn
+    self._params["ML"]["Maneuver"]["lane_change"] = rn
     # self._params["ML"]["Maneuver"]["slow_down"] = sd
     return world
