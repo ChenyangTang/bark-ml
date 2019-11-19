@@ -32,45 +32,6 @@ flags.DEFINE_enum('mode',
                   ['train', 'visualize', 'evaluate'],
                   'Mode the configuration should be executed in.')
 
-class SACHighwayConfiguration(BaseConfiguration):
-  """Hermetic and reproducible configuration class
-  """
-  def __init__(self,
-               params):
-    BaseConfiguration.__init__(
-      self,
-      params)
-
-  def _build_configuration(self):
-    """Builds a configuration using an SAC agent
-    """
-    self._scenario_generator = \
-      DeterministicScenarioGeneration(num_scenarios=3,
-                                      random_seed=0,
-                                      params=self._params)
-    self._observer = CustomObserver(params=self._params)
-    self._behavior_model = DynamicModel(params=self._params)
-    self._evaluator = CustomEvaluator(params=self._params)
-
-    viewer = MPViewer(params=self._params,
-                            x_range=[-20,20],
-                            y_range=[-20,20],
-                            follow_agent_id=True)
-    self._viewer = viewer
-    # self._viewer = VideoRenderer(renderer=viewer, world_step_time=0.2)
-    self._runtime = RuntimeRL(action_wrapper=self._behavior_model,
-                              observer=self._observer,
-                              evaluator=self._evaluator,
-                              step_time=0.2,
-                              viewer=self._viewer,
-                              scenario_generator=self._scenario_generator)
-    tfa_env = tf_py_environment.TFPyEnvironment(TFAWrapper(self._runtime))
-    self._agent = SACAgent(tfa_env, params=self._params)
-    self._runner = TFARunner(tfa_env,
-                             self._agent,
-                             params=self._params,
-                             unwrapped_runtime=self._runtime)
-                             
 
 def run_configuration(argv):
   params = ParameterServer(filename="configurations/sac_highway/config.json")
@@ -80,7 +41,7 @@ def run_configuration(argv):
     configuration.train()
   elif FLAGS.mode == 'visualize':
     configuration.visualize(10)
-    configuration._viewer.export_video("/home/hart/Dokumente/2019/bark-ml/configurations/sac_highway/video/lane_merge")
+    # configuration._viewer.export_video("/home/hart/Dokumente/2019/bark-ml/configurations/sac_highway/video/lane_merge")
   elif FLAGS.mode == 'evaluate':
     configuration.evaluate()
 

@@ -401,7 +401,7 @@
           "batch_size": 256,
           "buffer_num_steps": 2,
           "buffer_prefetch": 3,
-          "checkpoint_path": "/home/tang/bark-ml/configurations/sac_highway/checkpoints/"
+          "checkpoint_path": "/home/tang/bark-ml-old/configurations/sac_highway/checkpoints/"
       },
       "Evaluator": {
           "max_steps": 60,
@@ -421,7 +421,7 @@
           "collection_episodes_per_cycle": 2,
           "evaluate_every_n_steps": 100,
           "evaluation_steps": 25,
-          "summary_path": "/home/tang/bark-ml/configurations/sac_highway/summaries/"
+          "summary_path": "/home/tang/bark-ml-old/configurations/sac_highway/summaries/"
       },
       "DynamicModel": {
           "action_dimension": 2,
