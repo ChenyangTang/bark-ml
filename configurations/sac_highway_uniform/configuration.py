@@ -23,7 +23,7 @@ from src.wrappers.dynamic_model import DynamicModel
 from src.wrappers.tfa_wrapper import TFAWrapper
 from src.evaluators.goal_reached import GoalReached
 from src.agents.sac_agent import SACAgent
-from src.runners.tfa_runner import TFARunner
+from src.runners.sac_runner import SACRunner
 from configurations.base_configuration import BaseConfiguration
 
 # configuration specific evaluator
@@ -79,7 +79,7 @@ class SACHighwayConfiguration(BaseConfiguration):
                               scenario_generator=self._scenario_generator)
     tfa_env = tf_py_environment.TFPyEnvironment(TFAWrapper(self._runtime))
     self._agent = SACAgent(tfa_env, params=self._params)
-    self._runner = TFARunner(tfa_env,
+    self._runner = SACRunner(tfa_env,
                              self._agent,
                              params=self._params,
                              unwrapped_runtime=self._runtime)
@@ -91,7 +91,7 @@ def run_configuration(argv):
   if FLAGS.mode == 'train':
     configuration.train()
   elif FLAGS.mode == 'visualize':
-    configuration.visualize(20)
+    configuration.visualize(10)
     configuration._viewer.export_video("/home/hart/Dokumente/2019/bark-ml/configurations/sac_highway_uniform/video/lane_merge")
   elif FLAGS.mode == 'evaluate':
     configuration.evaluate()

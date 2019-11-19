@@ -15,6 +15,7 @@ class CustomObserver(SimpleObserver):
     self._observation_len = \
       self._max_num_vehicles*self._len_state + 2
 
+    
   def observe(self, world, agents_to_observe):
     extended_state = super(CustomObserver, self).observe(world, agents_to_observe)
     extended_state[-2] = self._params["ML"]["Maneuver"]["lane_change"]

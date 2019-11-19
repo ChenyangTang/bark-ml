@@ -10,13 +10,10 @@
                     "dynamic_model": "SingleTrackModel",
                     "execution_model": "ExecutionModelInterpolate",
                     "id": 100,
-                    "state": [
-                        0.0,
-                        5111.0,
-                        5106.8305,
-                        1.57,
-                        10.0
-                    ],
+                    "state": [ 0.0, 0.0,  0.0,  0.0,  0.0,  0.0,
+                        0.0, 1.0, 0.0,
+                        0.0, 1.0, 0.0,
+                        0.0, 1.0, 0.0],
                     "shape": {
                         "polygon_points": [
                             [
@@ -134,11 +131,11 @@
                     "execution_model": "ExecutionModelInterpolate",
                     "id": 101,
                     "state": [
-                      0.0,
-                      5114.3,
-                      5114.3,
-                      0.0,
-                      15.0
+                      [0.0, 0.0],
+                      [5114.3, 5114.3],
+                      [5114.3, 5130.3],
+                      [1.57, 1.57],
+                      [10.0, 15.0]
                     ],
                     "shape": {
                         "polygon_points": [
@@ -270,7 +267,7 @@
           "gamma": 0.99,
           "reward_scale_factor": 1.0,
           "gradient_clipping": null, 
-          "agent_name": "td3_agent",
+          "agent_name": "sac_agent",
           "debug_summaries": "True",
           "replay_buffer_capacity": 100000,
           "max_ckpts_to_keep": 3,
@@ -278,25 +275,31 @@
           "batch_size": 256,
           "buffer_num_steps": 2,
           "buffer_prefetch": 3,
-          "checkpoint_path": "/home/hart/Dokumente/2019/bark-ml/configurations/td3_highway/checkpoints/"
+          "checkpoint_path": "/home/hart/Dokumente/2019/bark-ml/configurations/sac_drone/checkpoints/"
       },
       "Evaluator": {
           "max_steps": 60,
           "collision_penalty": -1.0,
           "goal_reward": 1.0
       },
+      "Observer": {
+          "velocity_range": [0, 30],
+          "theta_range": [0.0, 6.29],
+          "normalization_enabled": true,
+          "max_num_agents": 2
+      },
       "Runner": {
-          "number_of_collections": 10000,
-          "initial_collection_steps": 100,
-          "collection_episodes_per_cycle": 1,
-          "evaluate_every_n_steps": 100,
-          "evaluation_steps": 30,
-          "summary_path": "/home/hart/Dokumente/2019/bark-ml/configurations/td3_highway/summaries/"
+          "number_of_collections": 100000,
+          "initial_collection_steps": 1000,
+          "collection_episodes_per_cycle": 2,
+          "evaluate_every_n_steps": 1000,
+          "evaluation_steps": 25,
+          "summary_path": "/home/hart/Dokumente/2019/bark-ml/configurations/sac_drone/summaries/"
       },
       "DynamicModel": {
-          "action_dimension": 2,
-          "actions_lower_bound": [-1.0, -0.1],
-          "actions_upper_bound": [1.0, 0.1]
+          "action_dimension": 3,
+          "actions_lower_bound": [-1.0, -0.1, -0.1],
+          "actions_upper_bound": [1.0, 0.1, 0.1]
       },
       "MotionPrimitives": {
           "motion_primitives": [[4.0, 0.0],
@@ -304,5 +307,8 @@
                                 [-0.5, 0.0],
                                 [-1.0, 0.0]]
       }
-  } 
+  },
+  "DynamicModel": {
+    "state_dimension": 15
+  }
 }
