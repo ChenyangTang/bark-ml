@@ -99,7 +99,7 @@
           "parallel_buffer_calls": 1,
           "buffer_num_steps": 1,
           "buffer_prefetch": 1,
-          "checkpoint_path": "/home/hart/Dokumente/2019/bark-ml/configurations/ppo_drone_challenge/checkpoints/"
+          "checkpoint_path": "/home/tang/bark-ml-old/configurations/ppo_drone_challenge/checkpoints/"
       },
       "Evaluator": {
           "max_steps": 100,
@@ -118,7 +118,7 @@
           "collection_episodes_per_cycle": 2,
           "evaluate_every_n_steps": 250,
           "evaluation_steps": 20,
-          "summary_path": "/home/hart/Dokumente/2019/bark-ml/configurations/ppo_drone_challenge/summaries/"
+          "summary_path": "/home/tang/bark-ml-old/configurations/ppo_drone_challenge/summaries/"
       },
       "DynamicModel": {
           "action_dimension": 3,
