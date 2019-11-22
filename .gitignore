@@ -145,6 +145,7 @@ tests/environment/hello-test\.cc
 modules/example_module/proto/tutorial/
 
 python/venv
+python/venv2
 node_modules
 web/node_modules
 
