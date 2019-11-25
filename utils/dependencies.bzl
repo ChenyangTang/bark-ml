@@ -5,14 +5,14 @@ def _maybe(repo_rule, name, **kwargs):
         repo_rule(name = name, **kwargs)
 
 def load_bark():
-  #_maybe(
-    #native.local_repository,
-    #name = "bark_project",
-    #path="/home/tang/bark-new",
-  #)
-   _maybe(
-     git_repository,
-     name = "bark_project",
-     branch= "master",
-     remote = "https://github.com/ChenyangTang/bark",
-   )
+  _maybe(
+    native.local_repository,
+    name = "bark_project",
+    path="/home/tang/bark-new",
+  )
+   #_maybe(
+     #git_repository,
+     #name = "bark_project",
+     #branch= "master",
+     #remote = "https://github.com/ChenyangTang/bark",
+   #)

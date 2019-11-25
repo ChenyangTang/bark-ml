@@ -67,7 +67,7 @@ class CustomEvaluator(GoalReached):
     collision = eval_results["ego_collision"]
     step_count = eval_results["step_count"]
     # determine whether the simulation should terminate
-    if (success//5) or collision or step_count > self._max_steps:
+    if success or collision or step_count > self._max_steps:
       done = True
     # calculate reward
     # print("success1 = {}".format(str(success)))

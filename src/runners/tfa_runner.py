@@ -146,10 +146,10 @@ class TFARunner(BaseRunner):
         #else:
             #print("Now Ego-car will stay on the original lane and keep the speed")
         while not is_terminal:
-          print(state)
+          # print(state)
           action_step = self._agent._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
           #print("State: {}".format(state))
           # TODO(@hart); make generic for multi agent planning
           state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step.action.numpy())
-          print(reward)
+          # print(reward)
           self._unwrapped_runtime.render()

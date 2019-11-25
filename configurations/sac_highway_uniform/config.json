@@ -13,7 +13,7 @@
               ],
               "EgoGoalDistance": [
                   0,
-                  50
+                  30
               ],
               "EgoGoalStateLimits": [
                   0.5,
