@@ -4,15 +4,16 @@
           "UniformVehicleDistribution": {
               "MapFilename": "tests/data/city_highway_straight.xodr",
               "EgoGoalStart": [
-                   
+                  5111.626,
+                  5103.1725 
               ],
               "EgoGoalEnd": [
                   5111.626,
-                  5113.1725   
+                  5108.1725   
               ],
               "EgoGoalDistance": [
                   0,
-                  30
+                  50
               ],
               "EgoGoalStateLimits": [
                   0.5,
