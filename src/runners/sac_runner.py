@@ -107,6 +107,10 @@ class SACRunner(TFARunner):
       for _ in range(0, num_episodes):
         state = self._unwrapped_runtime.reset()
         is_terminal = False
+        # if self._params["ML"]["Maneuver"]["lane_change"] == 1:
+        #   print("Now Ego-car will change the lane")
+        # else:
+        #   print("Now Ego-car will stay on the original lane")
         while not is_terminal:
           # print(state)
           action_step = self._agent._eval_policy.action(

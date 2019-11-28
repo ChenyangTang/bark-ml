@@ -19,15 +19,16 @@ class CustomObserver(ClosestAgentsObserver):
 
   def observe(self, world, agents_to_observe):
     extended_state = super(CustomObserver, self).observe(world, agents_to_observe)
-    extended_state[-1] = self._params["ML"]["Maneuver"]["lane_change"]
+    lane_change = world.agents[agents_to_observe[0]].goal_definition.lane_change
+    extended_state[-1] = lane_change
     # extended_state[-1] = self._params["ML"]["Maneuver"]["slow_down"]
     return extended_state
 
   def reset(self, world, agents_to_observe):
     super(CustomObserver, self).reset(world, agents_to_observe)
-    rn = np.random.randint(0, 2)
+    #rn = np.random.randint(0, 2)
     # rn = 0
     # sd = np.random.randint(0, 2)
-    self._params["ML"]["Maneuver"]["lane_change"] = rn
+    #self._params["ML"]["Maneuver"]["lane_change"] = rn
     # self._params["ML"]["Maneuver"]["slow_down"] = sd
     return world
