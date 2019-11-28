@@ -18,12 +18,12 @@ from src.observers.graph_observer import GraphObserver
 from src.wrappers.dynamic_model import DynamicModel
 from src.wrappers.tfa_wrapper import TFAWrapper
 from src.evaluators.goal_reached import GoalReached
-from src.agents.sac_agent import SACAgent
+from src.agents.sac_agent_cgnn import SACAgent
 from src.runners.sac_runner import SACRunner
 from configurations.base_configuration import BaseConfiguration
 
 # configuration specific evaluator
-from configurations.sac_highway_uniform.custom_evaluator import CustomEvaluator
+from configurations.sac_highway_uniform_cgnn.custom_evaluator import CustomEvaluator
 
 FLAGS = flags.FLAGS
 flags.DEFINE_enum('mode',
@@ -47,7 +47,6 @@ class SACHighwayConfiguration(BaseConfiguration):
       UniformVehicleDistribution(num_scenarios=20,
                                  random_seed=0,
                                  params=self._params)
-    # self._observer = ClosestAgentsObserver(params=self._params)
     self._observer = GraphObserver(params=self._params)
     self._behavior_model = DynamicModel(params=self._params)
     self._evaluator = CustomEvaluator(params=self._params)
@@ -56,7 +55,7 @@ class SACHighwayConfiguration(BaseConfiguration):
                             x_range=[-20,20],
                             y_range=[-20,20],
                             follow_agent_id=True)
-    #self._viewer = VideoRenderer(renderer=viewer, world_step_time=0.2)
+    # self._viewer = VideoRenderer(renderer=viewer, world_step_time=0.2)
     self._runtime = RuntimeRL(action_wrapper=self._behavior_model,
                               observer=self._observer,
                               evaluator=self._evaluator,
@@ -71,7 +70,7 @@ class SACHighwayConfiguration(BaseConfiguration):
                              unwrapped_runtime=self._runtime)
 
 def run_configuration(argv):
-  params = ParameterServer(filename="configurations/sac_highway_uniform/config.json")
+  params = ParameterServer(filename="configurations/sac_highway_uniform_cgnn/config.json")
   configuration = SACHighwayConfiguration(params)
   
   if FLAGS.mode == 'train':
@@ -79,7 +78,7 @@ def run_configuration(argv):
     configuration.train()
   elif FLAGS.mode == 'visualize':
     configuration.visualize(10)
-    configuration._viewer.export_video("/home/hart/Dokumente/2019/bark-ml/configurations/sac_highway_uniform/video/lane_merge")
+    # configuration._viewer.export_video("/home/hart/Dokumente/2019/bark-ml/configurations/sac_highway_uniform_cgnn/video/lane_merge")
   elif FLAGS.mode == 'evaluate':
     configuration.evaluate()
 

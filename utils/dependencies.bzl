@@ -10,6 +10,11 @@ def load_bark():
     name = "bark_project",
     path="/home/hart/Dokumente/2019/bark",
   )
+  _maybe(
+    native.local_repository,
+    name = "icml2020",
+    path="/home/hart/Dokumente/2019/icml2020",
+  )
   # _maybe(
   #   git_repository,
   #   name = "bark_project",

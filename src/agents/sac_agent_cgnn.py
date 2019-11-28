@@ -12,6 +12,9 @@ from tf_agents.utils.common import Checkpointer
 from tf_agents.trajectories import time_step as ts
 
 from src.agents.tfa_agent import TFAAgent
+from source.cgnn import CGNN
+from source.tfa_actor_net import CGNNNetwork
+from source.tfa_critic_net import CGNNCriticNetwork
 
 class SACAgent(TFAAgent):
   """SAC-Agent
@@ -50,21 +53,50 @@ class SACAgent(TFAAgent):
         std_transform=sac_agent.std_clip_transform,
         scale_distribution=True)
 
-    # actor network
-    actor_net = actor_distribution_network.ActorDistributionNetwork(
-        env.observation_spec(),
-        env.action_spec(),
-        fc_layer_params=tuple(
-          self._params["ML"]["Agent"]["actor_fc_layer_params"]),
-        continuous_projection_net=_normal_projection_net)
+    actor_cgnn = CGNN(
+      node_layers_def=[
+        {"units" : 128, "activation": "relu", "dropout_rate": 0.0},
+        {"units" : 128, "activation": "relu", "dropout_rate": 0.0},
+        {"units" : 32, "activation": "linear", "dropout_rate": 0.0},
+      ],
+      edge_layers_def=[
+        {"units" : 128, "activation": "relu", "dropout_rate": 0.0},
+        {"units" : 128, "activation": "relu", "dropout_rate": 0.0},
+        {"units" : 32, "activation": "linear", "dropout_rate": 0.0},
+      ],
+      h0_dim=4,
+      e0_dim=4,
+      training=True)
 
-    # critic network
-    critic_net = critic_network.CriticNetwork(
+    critic_cgnn = CGNN(
+      node_layers_def=[
+        {"units" : 128, "activation": "relu", "dropout_rate": 0.0},
+        {"units" : 128, "activation": "relu", "dropout_rate": 0.0},
+        {"units" : 32, "activation": "linear", "dropout_rate": 0.0},
+      ],
+      edge_layers_def=[
+        {"units" : 128, "activation": "relu", "dropout_rate": 0.0},
+        {"units" : 128, "activation": "relu", "dropout_rate": 0.0},
+        {"units" : 32, "activation": "linear", "dropout_rate": 0.0},
+      ],
+      h0_dim=4,
+      e0_dim=4,
+      training=True)
+
+    actor_net = CGNNNetwork(
+      env.observation_spec(),
+      env.action_spec(),
+      fc_layer_params=(256, 128),
+      cgnn=actor_cgnn)
+
+    critic_net = CGNNCriticNetwork(
       (env.observation_spec(), env.action_spec()),
-      observation_fc_layer_params=None,
+      observation_fc_layer_params=(128, 128),
       action_fc_layer_params=None,
       joint_fc_layer_params=tuple(
-        self._params["ML"]["Agent"]["critic_joint_fc_layer_params"]))
+        self._params["ML"]["Agent"]["critic_joint_fc_layer_params"]),
+      cgnn=critic_cgnn)
+    
     
     # agent
     tf_agent = sac_agent.SacAgent(
