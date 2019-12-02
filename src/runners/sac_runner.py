@@ -94,11 +94,8 @@ class SACRunner(TFARunner):
     for _ in range(0, self._params["ML"]["Runner"]["number_of_collections"]):
       global_iteration = self._agent._agent._train_step_counter.numpy()
       self._collection_driver.run()
-      try:
-        experience, _ = next(iterator)
-        self._agent._agent.train(experience)
-      except:
-        print("Could not train the network.")
+      experience, _ = next(iterator)
+      self._agent._agent.train(experience)
       if global_iteration % self._params["ML"]["Runner"]["evaluate_every_n_steps"] == 0:
         self.evaluate()
         self._agent.save()
