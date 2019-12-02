@@ -35,7 +35,6 @@ class GraphObserver(StateObserver):
       # normalized_state = self._normalize(agent.state)
       reduced_state = self._select_state_by_index(agent.state)
       vehicles.append(reduced_state)
-    print("vehicles: ", vehicles)
     normalization = {
       "x": {
         "pos": int(StateDefinition.X_POSITION),
