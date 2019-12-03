@@ -6,7 +6,7 @@ from modules.runtime.commons.parameters import ParameterServer
 from bark.geometry import *
 
 from src.evaluators.goal_reached import GoalReached
-success = 0
+
 
 class CustomEvaluator(GoalReached):
   """Shows the capability of custom elements inside
@@ -19,6 +19,7 @@ class CustomEvaluator(GoalReached):
                          params,
                          eval_agent)
     self._last_goal_id = -1
+    self._reached_goal_in_last_step = False
 
   def _add_evaluators(self):
     self._evaluators["goal_reached"] = EvaluatorGoalReached(self._eval_agent)
@@ -59,11 +60,34 @@ class CustomEvaluator(GoalReached):
     current_goal_id = agent.goal_definition.GetCurrentId()
 
     # counts up for currently three added goals
-    print("current goal id", current_goal_id)
-    print("do lane change", lane_change)
+    # print("current goal id", current_goal_id)
+    # print("do lane change", lane_change)
 
-    # calculate number of goals that have been reached
-    number = current_goal_id + 1
+    # this only counts up 
+    intermediate_goal_reward = 0.
+
+    # only give intermediate reward if the agent reaches the goal state continuously
+    if self._last_goal_id + 1 == current_goal_id:
+      intermediate_goal_reward = 1.
+      self._reached_goal_in_last_step = True
+      if self._reached_goal_in_last_step is False:
+        intermediate_goal_reward = 0.
+        self._reached_goal_in_last_step = False 
+      self._last_goal_id = current_goal_id
+    else:
+      self._reached_goal_in_last_step = False
+
+    # if self._last_goal_id + 1 == current_goal_id:
+    #   if self._reached_goal_in_last_step is True:
+    #     intermediate_goal_reward = 1.
+    #   else:
+    #     intermediate_goal_reward = 0.
+    #   self._last_goal_id = current_goal_id
+    #   self._reached_goal_in_last_step = True
+    # else:
+    #   self._reached_goal_in_last_step = False
+    # print("last goal id", self._last_goal_id)
+
     success = eval_results["goal_reached"]
     distance = self._distance_to_center_line(world, lane_change)
     collision = eval_results["ego_collision"]
@@ -77,9 +101,14 @@ class CustomEvaluator(GoalReached):
     #print("distance = {}".format(str(distance)))
     #print("collision = {}".format(str(collision)))
     reward = collision * self._collision_penalty + \
-      number * self._goal_reward - 0.1*distance
-    print("reward = {}".format(str(reward)))
+      intermediate_goal_reward * self._goal_reward - 0.1*distance
+    # print("intermediate_reward = {}".format(str(intermediate_goal_reward)))
+    # print("reward = {}".format(str(reward)))
 
     return reward, done, eval_results
     
-
+  def reset(self, world, agents_to_evaluate):
+    world = super(CustomEvaluator, self).reset(world, agents_to_evaluate)
+    self._last_goal_id = -1
+    self._reached_goal_in_last_step = False
+    return world
