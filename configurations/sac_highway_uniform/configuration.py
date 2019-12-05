@@ -8,8 +8,6 @@ sys.path.append("/home/tang/bark/modules/runtime/scenario/scenario_generation")
 
 from modules.runtime.scenario.scenario_generation.uniform_vehicle_distribution \
   import UniformVehicleDistribution
-# from uniform_vehicle_distribution_lane_change \
-#   import UniformVehicleDistributionLaneChange
 from modules.runtime.scenario.scenario_generation.deterministic \
   import DeterministicScenarioGeneration
 from modules.runtime.commons.parameters import ParameterServer
@@ -48,13 +46,6 @@ class SACHighwayConfiguration(BaseConfiguration):
   def _build_configuration(self):
     """Builds a configuration using an SAC agent
     """
-    # if self._params["ML"]["Maneuver"]["lane_change"] == 1:
-
-    #   self._scenario_generator = \
-    #     UniformVehicleDistributionLaneChange(num_scenarios=20,
-    #                               random_seed=0,
-    #                               params=self._params)
-    # else:
     self._scenario_generator = \
         UniformVehicleDistribution(num_scenarios=20,
                                   random_seed=0,

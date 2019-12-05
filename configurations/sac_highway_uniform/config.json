@@ -3,47 +3,45 @@
       "Generation": {
           "UniformVehicleDistribution": {
               "MapFilename": "tests/data/city_highway_straight.xodr",
-              "EgoGoalStart": [
+              "GoalStart": [
                   5111.626,
                   5003.1725 
               ],
-              "EgoGoalEnd": [
+              "GoalEnd": [
                   5111.626,
                   5198.1725   
               ],
-              "EgoGoalDistance": [
-                  0,
-                  30
-              ],
-              "EgoGoalNumber": [
-                  3
-              ],
-              "EgoGoalStateLimits": [
-                  1,
-                  0,
-                  0
-              ],
-              "EgoRoute": [
-                  [
-                      5116,
-                      5072
-                  ],
-                  [
-                      5116,
-                      5074
-                  ]
-              ],
-              "OthersSource": [
+              "Sources": [
                   [
                       5111.626,
                       5006.8305
+                  ],
+                  [
+                      5115.626,
+                      5006.8305
                   ]
               ],
-              "OthersSink": [
+              "Sinks": [
                   [
                       5111.626,
                       5193.1725
+                  ],
+                  [
+                      5115.626,
+                      5193.1725
                   ]
+              ],
+              "GoalDistance": [
+                0,
+                30
+              ],
+              "GoalNumber": [
+                3
+              ],
+              "GoalStateLimits": [
+                0.8,
+                0,
+                0
               ],
               "VehicleDistanceRange": [
                   10,
