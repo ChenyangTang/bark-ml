@@ -47,8 +47,8 @@ class SACHighwayConfiguration(BaseConfiguration):
       UniformVehicleDistribution(num_scenarios=20,
                                  random_seed=0,
                                  params=self._params)
-    # self._observer = ClosestAgentsObserver(params=self._params)
-    self._observer = GraphObserver(params=self._params)
+    self._observer = ClosestAgentsObserver(params=self._params)
+    # self._observer = GraphObserver(params=self._params)
     self._behavior_model = DynamicModel(params=self._params)
     self._evaluator = CustomEvaluator(params=self._params)
 
@@ -66,7 +66,7 @@ class SACHighwayConfiguration(BaseConfiguration):
     tfa_env = tf_py_environment.TFPyEnvironment(TFAWrapper(self._runtime))
     self._agent = SACAgent(tfa_env, params=self._params)
     self._runner = SACRunner(tfa_env,
-                             self._agent,
+                             [self._agent],
                              params=self._params,
                              unwrapped_runtime=self._runtime)
 

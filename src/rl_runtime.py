@@ -48,11 +48,18 @@ class RuntimeRL(Runtime):
     Returns:
         (next_state, reward, done, info) -- RL tuple
     """
+    # THIS WILL BE CALLED FROM ALL STEP DRIVERS
     self._world = self._action_wrapper.action_to_behavior(world=self._world,
                                                           action=action)
-    self._world.step(self._step_time)
-    if self._render:
-      self.render()
+    # TODO(@hall): length of agents
+    if self._action_wrapper._input_count >= 2:
+      # CANNOT STEP WORLD IF NOT ALL ACTIONS ARE SET
+      self._action_wrapper._input_count = 0
+      # NEED TO MAKE SURE ALL ACTIONS HAVE BEEN SET
+      self._world.step(self._step_time)
+      if self._render:
+        self.render()
+    
     return self.snapshot(
       world=self._world,
       controlled_agents=self._scenario._eval_agent_ids)

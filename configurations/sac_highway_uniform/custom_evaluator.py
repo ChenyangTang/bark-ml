@@ -60,4 +60,7 @@ class CustomEvaluator(GoalReached):
       success * self._goal_reward - distance - ((agent_state[4] - 11.)**2)**.5
     return reward, done, eval_results
     
-
+  def reset(self, world, agents_to_evaluate):
+    world = super(GoalReached, self).reset(world, agents_to_evaluate)
+    
+    return world

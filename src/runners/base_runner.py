@@ -38,6 +38,7 @@ class BaseRunner(ABC):
     """Resets the runtime and the agent
     """
     self._runtime.reset()
-    self._agent.reset()
+    for agent in self._agent:
+      agent.reset()
 
     

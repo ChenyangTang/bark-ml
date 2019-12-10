@@ -43,8 +43,8 @@
                   20
               ],
               "OtherVehicleVelocityRange": [
-                  2,
-                  8
+                10,
+                12
               ],
               "EgoVehicleVelocityRange": [
                   10,

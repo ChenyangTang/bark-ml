@@ -41,7 +41,7 @@ class TFARunner(BaseRunner):
     ]
     self._summary_writer = None
     self._unwrapped_runtime = unwrapped_runtime
-    self.get_initial_collection_driver()
+    # self.get_initial_collection_driver()
     self.get_collection_driver()
 
   def setup_writer(self):
@@ -49,32 +49,35 @@ class TFARunner(BaseRunner):
       self._summary_writer = tf.summary.create_file_writer(
         self._params["ML"]["Runner"]["summary_path"])
 
-  def get_initial_collection_driver(self):
-    """Sets the initial collection driver for tf-agents.
-    """
-    self._initial_collection_driver = \
-      dynamic_episode_driver.DynamicEpisodeDriver(
-        env=self._runtime,
-        policy=self._agent._agent.collect_policy,
-        observers=[self._agent._replay_buffer.add_batch],
-        num_episodes=self._params["ML"]["Runner"]["initial_collection_steps"])
-    self._initial_collection_driver.run = common.function(
-      self._initial_collection_driver.run)
+  # def get_initial_collection_driver(self):
+  #   """Sets the initial collection driver for tf-agents.
+  #   """
+  #   self._initial_collection_driver = \
+  #     dynamic_episode_driver.DynamicEpisodeDriver(
+  #       env=self._runtime,
+  #       policy=self._agent._agent.collect_policy,
+  #       observers=[self._agent._replay_buffer.add_batch],
+  #       num_episodes=self._params["ML"]["Runner"]["initial_collection_steps"])
+  #   self._initial_collection_driver.run = common.function(
+  #     self._initial_collection_driver.run)
 
   def get_collection_driver(self):
     """Sets the collection driver for tf-agents.
     """
-    self._collection_driver = dynamic_episode_driver.DynamicEpisodeDriver(
-      env=self._runtime,
-      policy=self._agent._agent.collect_policy,
-      observers=[self._agent._replay_buffer.add_batch],
-      num_episodes=self._params["ML"]["Runner"]["collection_episodes_per_cycle"])
-    self._collection_driver.run = common.function(self._collection_driver.run)
+    self._collection_driver = []
+    for agent in self._agent:
+      self._collection_driver.append(dynamic_episode_driver.DynamicEpisodeDriver(
+        env=self._runtime,
+        policy=agent._agent.collect_policy, # this is the agents policy
+        observers=[agent._replay_buffer.add_batch],
+        num_episodes=self._params["ML"]["Runner"]["collection_episodes_per_cycle"]))
+      # self._collection_driver[-1].run = common.function(self._collection_driver[-1].run)
 
   def collect_initial_episodes(self):
     """Function that collects the initial episodes
     """
-    self._initial_collection_driver.run()
+    pass
+    # self._initial_collection_driver.run()
 
   def train(self):
     """Wrapper that sets the summary writer.
@@ -94,30 +97,30 @@ class TFARunner(BaseRunner):
     """
     pass
 
-  def evaluate(self):
-    """Evaluates the agent
-    """
-    global_iteration = self._agent._agent._train_step_counter.numpy()
-    logger.info("Evaluating the agent's performance in {} episodes."
-      .format(str(self._params["ML"]["Runner"]["evaluation_steps"])))
-    metric_utils.eager_compute(
-      self._eval_metrics,
-      self._runtime,
-      self._agent._agent.policy,
-      num_episodes=self._params["ML"]["Runner"]["evaluation_steps"])
-    metric_utils.log_metrics(self._eval_metrics)
-    tf.summary.scalar("mean_reward",
-                      self._eval_metrics[0].result().numpy(),
-                      step=global_iteration)
-    tf.summary.scalar("mean_steps",
-                      self._eval_metrics[1].result().numpy(),
-                      step=global_iteration)
-    logger.info(
-      "The agent achieved on average {} reward and {} steps in \
-      {} episodes." \
-      .format(str(self._eval_metrics[0].result().numpy()),
-              str(self._eval_metrics[1].result().numpy()),
-              str(self._params["ML"]["Runner"]["evaluation_steps"])))
+  # def evaluate(self):
+  #   """Evaluates the agent
+  #   """
+  #   global_iteration = self._agent._agent._train_step_counter.numpy()
+  #   logger.info("Evaluating the agent's performance in {} episodes."
+  #     .format(str(self._params["ML"]["Runner"]["evaluation_steps"])))
+  #   metric_utils.eager_compute(
+  #     self._eval_metrics,
+  #     self._runtime,
+  #     self._agent._agent.policy,
+  #     num_episodes=self._params["ML"]["Runner"]["evaluation_steps"])
+  #   metric_utils.log_metrics(self._eval_metrics)
+  #   tf.summary.scalar("mean_reward",
+  #                     self._eval_metrics[0].result().numpy(),
+  #                     step=global_iteration)
+  #   tf.summary.scalar("mean_steps",
+  #                     self._eval_metrics[1].result().numpy(),
+  #                     step=global_iteration)
+  #   logger.info(
+  #     "The agent achieved on average {} reward and {} steps in \
+  #     {} episodes." \
+  #     .format(str(self._eval_metrics[0].result().numpy()),
+  #             str(self._eval_metrics[1].result().numpy()),
+  #             str(self._params["ML"]["Runner"]["evaluation_steps"])))
 
   def visualize(self, num_episodes=1):
     # Ticket (https://github.com/tensorflow/agents/issues/59) recommends
@@ -128,9 +131,10 @@ class TFARunner(BaseRunner):
         is_terminal = False
         while not is_terminal:
           print(state)
-          action_step = self._agent._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
-          print(action_step)
+          action_step_0 = self._agent[0]._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
+          action_step_1 = self._agent[1]._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
+          print(action_step_0)
           # TODO(@hart); make generic for multi agent planning
-          state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step.action.numpy())
+          state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step_0.action.numpy())
           print(reward)
           self._unwrapped_runtime.render()
