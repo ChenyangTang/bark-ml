@@ -83,6 +83,7 @@ class RuntimeRL(Runtime):
     next_state = self._observer.observe(
       world=self._world,
       agents_to_observe=controlled_agents)
+    # What should the return be
     reward, done, info = self._evaluator.evaluate(world=world)
     return next_state, reward, done, info
 
