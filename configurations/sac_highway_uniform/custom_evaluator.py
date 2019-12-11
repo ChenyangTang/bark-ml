@@ -20,6 +20,8 @@ class CustomEvaluator(GoalReached):
                          eval_agent)
     self._last_goal_id = -1
     self._reached_goal_in_last_step = False
+    # TODO: use from config file
+    self._intermediate_goal_reward = 1.0
 
   def _add_evaluators(self):
     self._evaluators["goal_reached"] = EvaluatorGoalReached(self._eval_agent)
@@ -42,7 +44,7 @@ class CustomEvaluator(GoalReached):
     centerline = agent.local_map.get_driving_corridor().center
     
     if lane_change == 1:
-      agent_xy = Point2d(agent.state[1] + 4., agent.state[2])
+      agent_xy = Point2d(agent.state[1] - 4., agent.state[2])
       
     else:
       agent_xy = Point2d(agent.state[1], agent.state[2])
@@ -67,15 +69,15 @@ class CustomEvaluator(GoalReached):
     intermediate_goal_reward = 0.
 
     # only give intermediate reward if the agent reaches the goal state continuously
-    if self._last_goal_id + 1 == current_goal_id:
-      intermediate_goal_reward = 1.
-      self._reached_goal_in_last_step = True
-      if self._reached_goal_in_last_step is False:
-        intermediate_goal_reward = 0.
-        self._reached_goal_in_last_step = False 
-      self._last_goal_id = current_goal_id
-    else:
-      self._reached_goal_in_last_step = False
+    # if self._last_goal_id + 1 == current_goal_id:
+    #   intermediate_goal_reward = 1.
+    #   self._reached_goal_in_last_step = True
+    #   if self._reached_goal_in_last_step is False:
+    #     intermediate_goal_reward = 0.
+    #     self._reached_goal_in_last_step = False 
+    #   self._last_goal_id = current_goal_id
+    # else:
+    #   self._reached_goal_in_last_step = False
 
     # if self._last_goal_id + 1 == current_goal_id:
     #   if self._reached_goal_in_last_step is True:
@@ -100,8 +102,10 @@ class CustomEvaluator(GoalReached):
     #print("goal = {}".format(str(self._goal_reward)))
     #print("distance = {}".format(str(distance)))
     #print("collision = {}".format(str(collision)))
+    # TODO: add final reward (final_reward > intermediate_goal_reward)
     reward = collision * self._collision_penalty + \
-      intermediate_goal_reward * self._goal_reward - 0.1*distance
+      - 0.1*distance + \
+      success * self._goal_reward
     # print("intermediate_reward = {}".format(str(intermediate_goal_reward)))
     # print("reward = {}".format(str(reward)))
 
@@ -109,6 +113,8 @@ class CustomEvaluator(GoalReached):
     
   def reset(self, world, agents_to_evaluate):
     world = super(CustomEvaluator, self).reset(world, agents_to_evaluate)
+    # TODO: wrong agent ID
+    self._eval_agent = agents_to_evaluate[0]
     self._last_goal_id = -1
     self._reached_goal_in_last_step = False
     return world
