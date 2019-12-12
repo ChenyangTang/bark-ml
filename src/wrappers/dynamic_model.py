@@ -21,29 +21,32 @@ class DynamicModel(ActionWrapper):
       "Dimension of action",
       3]
     self._dynamic_model = eval("{}(self._params)".format(model_name))
-    self._behavior_model = DynamicBehaviorModel(self._dynamic_model,
-                                                self._params)
+    self._behavior_models = []
+    self._input_count = 0
 
   def reset(self, world, agents_to_act):
     """see base class
     """
     super(DynamicModel, self).reset(world=world,
                                     agents_to_act=agents_to_act)
-    self._behavior_model = DynamicBehaviorModel(self._dynamic_model,
-                                                self._params)
-    ego_agent_id = agents_to_act[0]
-    if ego_agent_id in world.agents:
-      world.agents[ego_agent_id].behavior_model = self._behavior_model
-    else:
-      raise ValueError("AgentID does not exist in world.")
+
+    for agent_id in agents_to_act:
+      self._behavior_models.append(DynamicBehaviorModel(self._dynamic_model,
+                                                        self._params))
+      if agent_id in world.agents:
+        world.agents[agent_id].behavior_model = self._behavior_models[-1]
+      else:
+        raise ValueError("AgentID does not exist in world.")
     return world
 
   def action_to_behavior(self, world, action):
     """see base class
     """
-    if self._behavior_model:
+    if len(self._behavior_models) >= 1:
       # set_last_action
-      self._behavior_model.set_last_action(action)
+      print("setting action",action)
+      self._behavior_models[self._input_count].set_last_action(action)
+      self._input_count += 1
     return world
 
   @property

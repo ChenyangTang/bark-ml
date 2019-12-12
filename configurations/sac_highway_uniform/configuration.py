@@ -17,6 +17,7 @@ from modules.runtime.viewer.video_renderer import VideoRenderer
 
 from src.rl_runtime import RuntimeRL
 from src.observers.nearest_state_observer import ClosestAgentsObserver
+# from src.observers.graph_observer import GraphObserver
 from src.wrappers.dynamic_model import DynamicModel
 from src.wrappers.tfa_wrapper import TFAWrapper
 from src.evaluators.goal_reached import GoalReached
@@ -71,7 +72,7 @@ class SACHighwayConfiguration(BaseConfiguration):
     tfa_env = tf_py_environment.TFPyEnvironment(TFAWrapper(self._runtime))
     self._agent = SACAgent(tfa_env, params=self._params)
     self._runner = SACRunner(tfa_env,
-                             self._agent,
+                             [self._agent],
                              params=self._params,
                              unwrapped_runtime=self._runtime)
 
@@ -80,6 +81,7 @@ def run_configuration(argv):
   configuration = SACHighwayConfiguration(params)
   
   if FLAGS.mode == 'train':
+    configuration._runner.setup_writer()
     configuration.train()
   elif FLAGS.mode == 'visualize':
     configuration.visualize(10)

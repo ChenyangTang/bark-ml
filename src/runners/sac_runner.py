@@ -27,12 +27,12 @@ class SACRunner(TFARunner):
   """
   def __init__(self,
                runtime=None,
-               agent=None,
+               agent=None, # should be a list
                params=ParameterServer(),
                unwrapped_runtime=None):
     TFARunner.__init__(self,
                        runtime=runtime,
-                       agent=agent,
+                       agent=agent, # list of agents
                        params=params,
                        unwrapped_runtime=unwrapped_runtime)
 
@@ -54,7 +54,7 @@ class SACRunner(TFARunner):
        Need to overwrite the class of the base function as the metric class somehow does
        not work.
     """
-    global_iteration = self._agent._agent._train_step_counter.numpy()
+    global_iteration = 0 # self._agent._agent._train_step_counter.numpy()
     logger.info("Evaluating the agent's performance in {} episodes."
       .format(str(self._params["ML"]["Runner"]["evaluation_steps"])))
     # Ticket (https://github.com/tensorflow/agents/issues/59) recommends
@@ -90,15 +90,27 @@ class SACRunner(TFARunner):
   def _train(self):
     """Trains the agent as specified in the parameter file
     """
-    iterator = iter(self._agent._dataset)
+    #iterator = [iter(agent._dataset) for agent in self._agent]
+    iterator = []
+    for agent in self._agent:
+      iterator.append(iter(agent._dataset))
+    print(iterator)
     for _ in range(0, self._params["ML"]["Runner"]["number_of_collections"]):
-      global_iteration = self._agent._agent._train_step_counter.numpy()
-      self._collection_driver.run()
-      experience, _ = next(iterator)
-      self._agent._agent.train(experience)
-      if global_iteration % self._params["ML"]["Runner"]["evaluate_every_n_steps"] == 0:
-        self.evaluate()
-        self._agent.save()
+
+      # global_iteration = self._agent._agent._train_step_counter.numpy()
+      # we collect experiences based on the SacAgent
+      for i in range(0, len(self._collection_driver)):
+        # this no matter what always outputs an action 
+        self._collection_driver[i].run()
+
+      # self._collection_driver_1.run()
+      for i, it in enumerate(iterator):
+        experience, _ = next(it)
+        self._agent[i]._agent.train(experience)
+
+      # if global_iteration % self._params["ML"]["Runner"]["evaluate_every_n_steps"] == 0:
+      #   # self.evaluate()
+      #   self._agent.save()
 
   def visualize(self, num_episodes=1):
     # Ticket (https://github.com/tensorflow/agents/issues/59) recommends
@@ -112,12 +124,12 @@ class SACRunner(TFARunner):
         # else:
         #   print("Now Ego-car will stay on the original lane")
         while not is_terminal:
-          # print(state)
-          action_step = self._agent._eval_policy.action(
-            ts.transition(state, reward=0.0, discount=1.0))
-          # print(action_step)
           # TODO(@hart); make generic for multi agent planning
-          state, reward, is_terminal, _ = self._unwrapped_runtime.step(
-            action_step.action.numpy())
+          for agent in self._agent:
+            action_step = agent._eval_policy.action(
+              ts.transition(state, reward=0.0, discount=1.0))
+            state, reward, is_terminal, _ = self._unwrapped_runtime.step(
+              action_step.action.numpy())
+          
           # print(reward)
           self._unwrapped_runtime.render()

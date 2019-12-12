@@ -48,8 +48,8 @@
                   20
               ],
               "OtherVehicleVelocityRange": [
-                  2,
-                  8
+                10,
+                12
               ],
               "EgoVehicleVelocityRange": [
                   10,
@@ -162,8 +162,8 @@
           "alpha_learning_rate": 3e-4,
           "target_update_tau": 0.005,
           "target_update_period": 1,
-          "gamma": 0.99,
-          "reward_scale_factor": 10.0,
+          "gamma": 0.995,
+          "reward_scale_factor": 1.0,
           "gradient_clipping": null, 
           "agent_name": "sac_agent",
           "debug_summaries": "True",
@@ -176,10 +176,9 @@
           "checkpoint_path": "/home/tang/bark-ml/configurations/sac_highway_uniform/checkpoints/"
       },
       "Evaluator": {
-          "max_steps": 60,
+          "max_steps": 50,
           "collision_penalty": -25.0,
-          "goal_reward": 25.0,
-          "intermediate_reward": 1.0
+          "goal_reward": 25.0
       },
       "Observer": {
           "velocity_range": [0, 30],
