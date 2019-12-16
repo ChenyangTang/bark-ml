@@ -16,7 +16,6 @@ from tf_agents.trajectories import time_step as ts
 from src.runners.base_runner import BaseRunner
 
 
-
 logger = logging.getLogger()
 # NOTE(@hart): this will print all statements
 # logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
