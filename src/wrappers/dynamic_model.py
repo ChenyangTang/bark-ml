@@ -29,12 +29,14 @@ class DynamicModel(ActionWrapper):
     """
     super(DynamicModel, self).reset(world=world,
                                     agents_to_act=agents_to_act)
-
+    self._input_count = 0
+    self._behavior_models = []
     for agent_id in agents_to_act:
       self._behavior_models.append(DynamicBehaviorModel(self._dynamic_model,
                                                         self._params))
       if agent_id in world.agents:
         world.agents[agent_id].behavior_model = self._behavior_models[-1]
+        world.agents[agent_id].set_move_automatically(False)
       else:
         raise ValueError("AgentID does not exist in world.")
     return world

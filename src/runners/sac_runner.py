@@ -99,6 +99,7 @@ class SACRunner(TFARunner):
 
       # global_iteration = self._agent._agent._train_step_counter.numpy()
       # we collect experiences based on the SacAgent
+      
       for i in range(0, len(self._collection_driver)):
         # this no matter what always outputs an action 
         self._collection_driver[i].run()
@@ -117,6 +118,7 @@ class SACRunner(TFARunner):
     # to do the rendering in the original environment
     if self._unwrapped_runtime is not None:
       for _ in range(0, num_episodes):
+        print("NEW EPISODE")
         state = self._unwrapped_runtime.reset()
         is_terminal = False
         # if self._params["ML"]["Maneuver"]["lane_change"] == 1:
@@ -125,7 +127,7 @@ class SACRunner(TFARunner):
         #   print("Now Ego-car will stay on the original lane")
         while not is_terminal:
           # TODO(@hart); make generic for multi agent planning
-          for agent in self._agent:
+          for i, agent in enumerate(self._agent):
             action_step = agent._eval_policy.action(
               ts.transition(state, reward=0.0, discount=1.0))
             state, reward, is_terminal, _ = self._unwrapped_runtime.step(

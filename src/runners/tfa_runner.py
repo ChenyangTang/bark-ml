@@ -89,7 +89,7 @@ class TFARunner(BaseRunner):
        This enables a seamingless integration with TensorBoard.
     """
     # collect initial episodes
-    self.collect_initial_episodes()
+    # self.collect_initial_episodes()
     # main training cycle
     if self._summary_writer is not None:
       with self._summary_writer.as_default():

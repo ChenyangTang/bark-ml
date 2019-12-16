@@ -35,6 +35,7 @@ class RuntimeRL(Runtime):
                                         self._scenario._eval_agent_ids)
     self._world = self._action_wrapper.reset(self._world,
                                              self._scenario._eval_agent_ids)
+    
     return self._observer.observe(
       world=self._world,
       agents_to_observe=self._scenario._eval_agent_ids)
@@ -51,18 +52,25 @@ class RuntimeRL(Runtime):
     # THIS WILL BE CALLED FROM ALL STEP DRIVERS
     self._world = self._action_wrapper.action_to_behavior(world=self._world,
                                                           action=action)
-    # TODO(@hall): length of agents
+    # 1. move the agent we set the action for
+    print("inp_cnt", self._action_wrapper._input_count)
+
+    # TODO(@all): length of agents
     if self._action_wrapper._input_count >= 2:
       # CANNOT STEP WORLD IF NOT ALL ACTIONS ARE SET
       self._action_wrapper._input_count = 0
-      # NEED TO MAKE SURE ALL ACTIONS HAVE BEEN SET
+      
+      # 2. move all other agent
       self._world.step(self._step_time)
       if self._render:
         self.render()
     
+    # TODO needs to know the agents id
     return self.snapshot(
       world=self._world,
-      controlled_agents=self._scenario._eval_agent_ids)
+      controlled_agents=[
+        self._scenario._eval_agent_ids[self._action_wrapper._input_count]
+      ])
 
   @property
   def action_space(self):
