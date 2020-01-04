@@ -4,7 +4,7 @@ import tensorflow as tf
 from tf_agents.environments import tf_py_environment
 
 import sys
-sys.path.append("/home/tang/bark/modules/runtime/scenario/scenario_generation")
+sys.path.append("/home/chenyang/bark/modules/runtime/scenario/scenario_generation")
 
 from modules.runtime.scenario.scenario_generation.uniform_vehicle_distribution \
   import UniformVehicleDistribution

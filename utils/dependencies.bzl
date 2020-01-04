@@ -8,7 +8,7 @@ def load_bark():
   _maybe(
     native.local_repository,
     name = "bark_project",
-    path="/home/tang/bark",
+    path="/home/chenyang/bark",
   )
    #_maybe(
      #git_repository,

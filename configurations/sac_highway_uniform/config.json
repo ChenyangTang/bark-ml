@@ -173,7 +173,7 @@
           "batch_size": 256,
           "buffer_num_steps": 2,
           "buffer_prefetch": 3,
-          "checkpoint_path": "/home/tang/bark-ml/configurations/sac_highway_uniform/checkpoints/"
+          "checkpoint_path": "/home/chenyang/bark-ml/configurations/sac_highway_uniform/checkpoints/"
       },
       "Evaluator": {
           "max_steps": 50,
@@ -192,7 +192,7 @@
           "collection_episodes_per_cycle": 1,
           "evaluate_every_n_steps": 100,
           "evaluation_steps": 25,
-          "summary_path": "/home/tang/bark-ml/configurations/sac_highway_uniform/summaries/"
+          "summary_path": "/home/chenyang/bark-ml/configurations/sac_highway_uniform/summaries/"
       },
       "DynamicModel": {
           "action_dimension": 2,

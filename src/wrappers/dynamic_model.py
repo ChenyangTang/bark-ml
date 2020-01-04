@@ -19,7 +19,7 @@ class DynamicModel(ActionWrapper):
     self._control_inputs = \
       self._params["ML"]["DynamicModel"]["action_dimension",
       "Dimension of action",
-      3]
+      2]
     self._dynamic_model = eval("{}(self._params)".format(model_name))
     self._behavior_models = []
     self._input_count = 0
