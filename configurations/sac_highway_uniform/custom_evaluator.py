@@ -54,6 +54,7 @@ class CustomEvaluator(GoalReached):
     """Returns information about the current world state
     """
     # should read parameter that has been set in the observer
+    
     agent_state = world.agents[self._eval_agent].state
     done = False
     agent = world.agents[self._eval_agent]

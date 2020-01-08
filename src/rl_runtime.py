@@ -54,12 +54,15 @@ class RuntimeRL(Runtime):
                                                           action=action)
     # 1. move the agent we set the action for
     print(self._action_wrapper._input_count)
+    print(self._scenario._eval_agent_ids[0])
     controlled_agent_id = self._scenario._eval_agent_ids[self._action_wrapper._input_count-1]
+    print("controlled agent:", controlled_agent_id)
     self._world.stepAgent(self._step_time, controlled_agent_id)
+    print("here")
     # print("inp_cnt", self._action_wrapper._input_count)
 
     # TODO(@all): length of agents
-    if self._action_wrapper._input_count >= 2:
+    if self._action_wrapper._input_count >= len(self._scenario._eval_agent_ids):
       # CANNOT STEP WORLD IF NOT ALL ACTIONS ARE SET
       self._action_wrapper._input_count = 0
       
