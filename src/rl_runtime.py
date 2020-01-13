@@ -53,12 +53,12 @@ class RuntimeRL(Runtime):
     self._world = self._action_wrapper.action_to_behavior(world=self._world,
                                                           action=action)
     # 1. move the agent we set the action for
-    print(self._action_wrapper._input_count)
-    print(self._scenario._eval_agent_ids[0])
+    # print(self._action_wrapper._input_count)
+    
     controlled_agent_id = self._scenario._eval_agent_ids[self._action_wrapper._input_count-1]
-    print("controlled agent:", controlled_agent_id)
+    # print("controlled agent:", controlled_agent_id)
     self._world.stepAgent(self._step_time, controlled_agent_id)
-    print("here")
+    # print("here")
     # print("inp_cnt", self._action_wrapper._input_count)
 
     # TODO(@all): length of agents

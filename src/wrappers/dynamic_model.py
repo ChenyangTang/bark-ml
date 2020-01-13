@@ -46,7 +46,7 @@ class DynamicModel(ActionWrapper):
     """
     if len(self._behavior_models) >= 1:
       # set_last_action
-      print("setting action",action)
+      # print("setting action",action)
       self._behavior_models[self._input_count].set_last_action(action)
       self._input_count += 1
     return world

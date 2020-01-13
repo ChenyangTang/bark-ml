@@ -39,7 +39,7 @@
                 3
               ],
               "GoalStateLimits": [
-                0.8,
+                0.2,
                 0,
                 0
               ],
@@ -163,7 +163,7 @@
           "target_update_tau": 0.005,
           "target_update_period": 1,
           "gamma": 0.995,
-          "reward_scale_factor": 1.0,
+          "reward_scale_factor": 25.0,
           "gradient_clipping": null, 
           "agent_name": "sac_agent",
           "debug_summaries": "True",
@@ -178,7 +178,7 @@
       "Evaluator": {
           "max_steps": 50,
           "collision_penalty": -25.0,
-          "goal_reward": 25.0
+          "goal_reward": 10.0
       },
       "Observer": {
           "velocity_range": [0, 30],

@@ -54,7 +54,7 @@ class SACRunner(TFARunner):
        Need to overwrite the class of the base function as the metric class somehow does
        not work.
     """
-    global_iteration = 0 # self._agent._agent._train_step_counter.numpy()
+    global_iteration = self._agent[0]._agent._train_step_counter.numpy()
     logger.info("Evaluating the agent's performance in {} episodes."
       .format(str(self._params["ML"]["Runner"]["evaluation_steps"])))
     # Ticket (https://github.com/tensorflow/agents/issues/59) recommends
@@ -66,12 +66,13 @@ class SACRunner(TFARunner):
         state = self._unwrapped_runtime.reset()
         is_terminal = False
         while not is_terminal:
-          action_step = self._agent._eval_policy.action(
-            ts.transition(state, reward=0.0, discount=1.0))
-          state, reward, is_terminal, _ = self._unwrapped_runtime.step(
-            action_step.action.numpy())
-          rewards.append(reward)
-          steps.append(1)
+          for i, agent in enumerate(self._agent):
+            action_step = agent._eval_policy.action(
+              ts.transition(state, reward=0.0, discount=1.0))
+            state, reward, is_terminal, _ = self._unwrapped_runtime.step(
+              action_step.action.numpy())
+            rewards.append(reward)
+            steps.append(1)
     mean_reward = np.sum(np.array(rewards))/len(rewards)
     mean_steps = np.sum(np.array(steps))/len(steps)
     tf.summary.scalar("mean_reward",
@@ -97,7 +98,7 @@ class SACRunner(TFARunner):
     print(iterator)
     for _ in range(0, self._params["ML"]["Runner"]["number_of_collections"]):
 
-      # global_iteration = self._agent._agent._train_step_counter.numpy()
+      global_iteration = self._agent[0]._agent._train_step_counter.numpy()
       # we collect experiences based on the SacAgent
       
       for i in range(0, len(self._collection_driver)):
@@ -109,16 +110,17 @@ class SACRunner(TFARunner):
         experience, _ = next(it)
         self._agent[i]._agent.train(experience)
 
-      # if global_iteration % self._params["ML"]["Runner"]["evaluate_every_n_steps"] == 0:
-      #   # self.evaluate()
-      #   self._agent.save()
+      if global_iteration % self._params["ML"]["Runner"]["evaluate_every_n_steps"] == 0:
+        self.evaluate()
+        for i, agent in enumerate(self._agent):
+          agent.save()
 
   def visualize(self, num_episodes=1):
     # Ticket (https://github.com/tensorflow/agents/issues/59) recommends
     # to do the rendering in the original environment
     if self._unwrapped_runtime is not None:
       for _ in range(0, num_episodes):
-        print("NEW EPISODE")
+        # print("NEW EPISODE")
         state = self._unwrapped_runtime.reset()
         is_terminal = False
         # if self._params["ML"]["Maneuver"]["lane_change"] == 1:

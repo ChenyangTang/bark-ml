@@ -53,11 +53,13 @@ class CustomEvaluator(GoalReached):
 
   def _distance_to_goal(self, world):
     d = 0.
-    for i, agent in world.agents.items():
+    for i in self._eval_agent:
+      agent = world.agents[i]
       state = agent.state
+      # print("state = {}".format(str(state)))
       goal_poly = agent.goal_definition.goal_shape
       d += distance(goal_poly, Point2d(state[1], state[2]))
-    d /= i
+    d /= 2
     return d
 
   def _evaluate(self, world, eval_results):
@@ -65,12 +67,12 @@ class CustomEvaluator(GoalReached):
     """
     # should read parameter that has been set in the observer
     
-    agent_state = world.agents[self._eval_agent].state
+    # agent_state = world.agents[self._eval_agent].state
     done = False
-    agent = world.agents[self._eval_agent]
+    # agent = world.agents[self._eval_agent]
 
-    lane_change = agent.goal_definition.lane_change
-    current_goal_id = agent.goal_definition.GetCurrentId()
+    # lane_change = agent.goal_definition.lane_change
+    # current_goal_id = agent.goal_definition.GetCurrentId()
 
     # counts up for currently three added goals
     # print("current goal id", current_goal_id)
@@ -114,14 +116,14 @@ class CustomEvaluator(GoalReached):
       - 0.1*distance + \
       success * self._goal_reward
     # print("intermediate_reward = {}".format(str(intermediate_goal_reward)))
-    # print("distance = {}".format(str(distance)))
+    print("distance = {}".format(str(distance)))
     # print("reward = {}".format(str(reward)))
 
     return reward, done, eval_results
     
   def reset(self, world, agents_to_evaluate):
     world = super(CustomEvaluator, self).reset(world, agents_to_evaluate)
-    self._eval_agent = agents_to_evaluate[0]
+    self._eval_agent = agents_to_evaluate
     self._last_goal_id = -1
     self._reached_goal_in_last_step = False
     return world

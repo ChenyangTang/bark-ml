@@ -59,8 +59,8 @@ class SACHighwayConfiguration(BaseConfiguration):
     
 
     self._viewer  = MPViewer(params=self._params,
-                            x_range=[-20,20],
-                            y_range=[-20,20],
+                            x_range=[-30,30],
+                            y_range=[-60,20],
                             follow_agent_id=True)
     #self._viewer = VideoRenderer(renderer=viewer, world_step_time=0.2)
     self._runtime = RuntimeRL(action_wrapper=self._behavior_model,
