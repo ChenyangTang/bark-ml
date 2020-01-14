@@ -1,7 +1,7 @@
 import numpy as np
 from bark.world.evaluation import \
   EvaluatorGoalReached, EvaluatorCollisionEgoAgent, \
-  EvaluatorCollisionDrivingCorridor, EvaluatorStepCount
+  EvaluatorCollisionDrivingCorridor, EvaluatorStepCount, EvaluatorDrivableArea
 from modules.runtime.commons.parameters import ParameterServer
 from bark.geometry import *
 from bark.models.dynamic import StateDefinition
@@ -26,6 +26,7 @@ class CustomEvaluator(GoalReached):
 
   def _add_evaluators(self):
     self._evaluators["goal_reached"] = EvaluatorGoalReached(self._eval_agent)
+    self._evaluators["drivable_area"] = EvaluatorDrivableArea()
     self._evaluators["ego_collision"] = \
       EvaluatorCollisionEgoAgent(self._eval_agent)
     self._evaluators["step_count"] = EvaluatorStepCount()
@@ -62,7 +63,25 @@ class CustomEvaluator(GoalReached):
     d /= 2
     return d
 
-  def _evaluate(self, world, eval_results):
+  # def calculate_reward(self, world, eval_results, action):
+  #   success = eval_results["goal_reached"]
+  #   collision = eval_results["collision"]
+  #   drivable_area = eval_results["drivable_area"]
+
+  #   distance_to_goals = self.distance_to_goal(world)
+  #   actions = np.reshape(action, (-1, 2))
+  #   accs = actions[:, 0]
+  #   delta = actions[:, 1]
+
+  #   # TODO(@hart): use parameter server
+  #   inpt_reward = np.sum((1/0.15*delta)**2 + (accs)**2)
+  #   reward = collision * self._collision_penalty + \
+  #     success * self._goal_reward - inpt_reward - \
+  #     0.1*distance_to_goals + drivable_area * self._collision_penalty - \
+  #     self.deviation_velocity(world)
+  #   return reward
+
+  def _evaluate(self, world, eval_results, action):
     """Returns information about the current world state
     """
     # should read parameter that has been set in the observer
@@ -117,7 +136,7 @@ class CustomEvaluator(GoalReached):
       success * self._goal_reward
     # print("intermediate_reward = {}".format(str(intermediate_goal_reward)))
     print("distance = {}".format(str(distance)))
-    # print("reward = {}".format(str(reward)))
+    print("reward = {}".format(str(reward)))
 
     return reward, done, eval_results
     

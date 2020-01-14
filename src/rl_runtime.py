@@ -76,7 +76,8 @@ class RuntimeRL(Runtime):
       world=self._world,
       controlled_agents=[
         controlled_agent_id
-      ])
+      ],
+      action=action)
 
   @property
   def action_space(self):
@@ -90,7 +91,7 @@ class RuntimeRL(Runtime):
     """
     return self._observer.observation_space
 
-  def snapshot(self, world, controlled_agents):
+  def snapshot(self, world, controlled_agents, action):
     """Evaluates and observes the world from the controlled-agents's
        perspective
     
@@ -105,7 +106,7 @@ class RuntimeRL(Runtime):
       world=self._world,
       agents_to_observe=controlled_agents)
     # What should the return be
-    reward, done, info = self._evaluator.evaluate(world=world)
+    reward, done, info = self._evaluator.evaluate(world=world, action=action)
     return next_state, reward, done, info
 
 
