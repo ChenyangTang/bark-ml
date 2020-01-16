@@ -62,6 +62,16 @@ class CustomEvaluator(GoalReached):
       d += distance(goal_poly, Point2d(state[1], state[2]))
     d /= 2
     return d
+  
+  def deviation_velocity(self, world):
+    desired_v = 11.
+    delta_v = 0.
+    for i in self._eval_agent:
+      agent = world.agents[i]
+      vel = agent.state[int(StateDefinition.VEL_POSITION)]
+      # print(vel)
+      delta_v += (desired_v-vel)**2
+    return delta_v/2
 
   # def calculate_reward(self, world, eval_results, action):
   #   success = eval_results["goal_reached"]
@@ -126,15 +136,17 @@ class CustomEvaluator(GoalReached):
     distance = self._distance_to_goal(world)
     collision = eval_results["ego_collision"]
     step_count = eval_results["step_count"]
+    drivable_area = eval_results["drivable_area"]
     # determine whether the simulation should terminate
-    if success or collision or step_count > self._max_steps:
+    if success or collision or step_count > self._max_steps: # or drivable_area:
       done = True
     # calculate reward
     
     reward = collision * self._collision_penalty + \
       - 0.1*distance + \
-      success * self._goal_reward
-    # print("intermediate_reward = {}".format(str(intermediate_goal_reward)))
+      success * self._goal_reward - self.deviation_velocity(world)
+      #+ drivable_area * self._collision_penalty 
+    # print("deviation = {}".format(str(self.deviation_velocity(world))))
     print("distance = {}".format(str(distance)))
     print("reward = {}".format(str(reward)))
 

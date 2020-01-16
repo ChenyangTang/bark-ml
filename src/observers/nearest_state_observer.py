@@ -54,10 +54,6 @@ class ClosestAgentsObserver(StateObserver):
       self._max_num_vehicles*self._len_relative_agent_state)
     concatenated_state[0:self._len_ego_state] = \
       self._select_state_by_index(self._norm(ego_state)) 
-    
-    #rn = np.random.randint(0, 2)
-    #self._params["ML"]["Maneuver"]["lane_change"] = rn
-    #concatenated_state[-1] = rn
 
     # add max number of agents to state concatenation vector
     concat_pos = self._len_relative_agent_state
