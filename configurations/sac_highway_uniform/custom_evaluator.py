@@ -1,6 +1,6 @@
 import numpy as np
 from bark.world.evaluation import \
-  EvaluatorGoalReached, EvaluatorCollisionEgoAgent, \
+  EvaluatorGoalReached, EvaluatorCollisionAgents, EvaluatorCollisionEgoAgent, \
   EvaluatorCollisionDrivingCorridor, EvaluatorStepCount, EvaluatorDrivableArea
 from modules.runtime.commons.parameters import ParameterServer
 from bark.geometry import *
@@ -25,79 +25,36 @@ class CustomEvaluator(GoalReached):
     self._intermediate_goal_reward = 1.0
 
   def _add_evaluators(self):
-    self._evaluators["goal_reached"] = EvaluatorGoalReached(self._eval_agent)
+    self._evaluators["goal_reached"] = EvaluatorGoalReached()
     self._evaluators["drivable_area"] = EvaluatorDrivableArea()
-    self._evaluators["ego_collision"] = \
-      EvaluatorCollisionEgoAgent(self._eval_agent)
+    # self._evaluators["ego_collision"] = \
+    #   EvaluatorCollisionEgoAgent(self._eval_agent)
+    self._evaluators["collision_agent_0"] = \
+      EvaluatorCollisionAgents()
     self._evaluators["step_count"] = EvaluatorStepCount()
 
-  # def _distance_to_center_line(self, world, lane_change):
-  #   """calculates the distance of the agent
-  #      to its centerline
-    
-  #   Arguments:
-  #       world {bark.world} -- bark world
-    
-  #   Returns:
-  #       float -- distance to centerline
-  #   """
-  #   agent = world.agents[self._eval_agent]
-  #   agent_state = agent.state
-  #   centerline = agent.local_map.get_driving_corridor().center
-    
-  #   if lane_change == 1:
-  #     agent_xy = Point2d(agent.state[1] - 4., agent.state[2])
-      
-  #   else:
-  #     agent_xy = Point2d(agent.state[1], agent.state[2])
-  #   return distance(centerline, agent_xy)
-
-  def _distance_to_goal(self, world):
+  def _distance_to_goal(self, world, agent_id):
     d = 0.
-    for i in self._eval_agent:
-      agent = world.agents[i]
-      state = agent.state
-      # print("state = {}".format(str(state)))
-      goal_poly = agent.goal_definition.goal_shape
-      d += distance(goal_poly, Point2d(state[1], state[2]))
-    d /= 2
+    agent = world.agents[agent_id]
+    state = agent.state
+    goal_poly = agent.goal_definition.goal_shape
+    d += distance(goal_poly, Point2d(state[1], state[2]))
     return d
   
-  def deviation_velocity(self, world):
+  def deviation_velocity(self, world, agent_id):
     desired_v = 11.
     delta_v = 0.
-    for i in self._eval_agent:
-      agent = world.agents[i]
-      vel = agent.state[int(StateDefinition.VEL_POSITION)]
-      # print(vel)
-      delta_v += (desired_v-vel)**2
-    return delta_v/2
+    agent = world.agents[agent_id]
+    vel = agent.state[int(StateDefinition.VEL_POSITION)]
+    delta_v += (desired_v-vel)**2
+    return delta_v
 
-  # def calculate_reward(self, world, eval_results, action):
-  #   success = eval_results["goal_reached"]
-  #   collision = eval_results["collision"]
-  #   drivable_area = eval_results["drivable_area"]
-
-  #   distance_to_goals = self.distance_to_goal(world)
-  #   actions = np.reshape(action, (-1, 2))
-  #   accs = actions[:, 0]
-  #   delta = actions[:, 1]
-
-  #   # TODO(@hart): use parameter server
-  #   inpt_reward = np.sum((1/0.15*delta)**2 + (accs)**2)
-  #   reward = collision * self._collision_penalty + \
-  #     success * self._goal_reward - inpt_reward - \
-  #     0.1*distance_to_goals + drivable_area * self._collision_penalty - \
-  #     self.deviation_velocity(world)
-  #   return reward
-
-  def _evaluate(self, world, eval_results, action):
+  def _evaluate(self, world, eval_results, action, agent_id):
     """Returns information about the current world state
     """
-    # should read parameter that has been set in the observer
+    # TODO(@Chenyang):check if intermediate reward is still needed
     
     # agent_state = world.agents[self._eval_agent].state
-    done = False
     # agent = world.agents[self._eval_agent]
 
     # lane_change = agent.goal_definition.lane_change
@@ -108,7 +65,7 @@ class CustomEvaluator(GoalReached):
     # print("do lane change", lane_change)
 
     # this only counts up 
-    intermediate_goal_reward = 0.
+    # intermediate_goal_reward = 0.
 
     # only give intermediate reward if the agent reaches the goal state continuously
     # if self._last_goal_id + 1 == current_goal_id:
@@ -121,34 +78,23 @@ class CustomEvaluator(GoalReached):
     # else:
     #   self._reached_goal_in_last_step = False
 
-    # if self._last_goal_id + 1 == current_goal_id:
-    #   if self._reached_goal_in_last_step is True:
-    #     intermediate_goal_reward = 1.
-    #   else:
-    #     intermediate_goal_reward = 0.
-    #   self._last_goal_id = current_goal_id
-    #   self._reached_goal_in_last_step = True
-    # else:
-    #   self._reached_goal_in_last_step = False
-    # print("last goal id", self._last_goal_id)
+    done = False
 
     success = eval_results["goal_reached"]
-    distance = self._distance_to_goal(world)
-    collision = eval_results["ego_collision"]
+    distance = self._distance_to_goal(world, agent_id)
+    collision = eval_results["collision_agent_0"]
     step_count = eval_results["step_count"]
     drivable_area = eval_results["drivable_area"]
+
     # determine whether the simulation should terminate
     if success or collision or step_count > self._max_steps: # or drivable_area:
       done = True
+      
     # calculate reward
-    
     reward = collision * self._collision_penalty + \
       - 0.1*distance + \
-      success * self._goal_reward - self.deviation_velocity(world)
+      success * self._goal_reward - self.deviation_velocity(world, agent_id)
       #+ drivable_area * self._collision_penalty 
-    # print("deviation = {}".format(str(self.deviation_velocity(world))))
-    print("distance = {}".format(str(distance)))
-    print("reward = {}".format(str(reward)))
 
     return reward, done, eval_results
     

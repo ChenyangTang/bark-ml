@@ -56,10 +56,7 @@ class RuntimeRL(Runtime):
     # print(self._action_wrapper._input_count)
     
     controlled_agent_id = self._scenario._eval_agent_ids[self._action_wrapper._input_count-1]
-    # print("controlled agent:", controlled_agent_id)
     self._world.stepAgent(self._step_time, controlled_agent_id)
-    # print("here")
-    # print("inp_cnt", self._action_wrapper._input_count)
 
     # TODO(@all): length of agents
     if self._action_wrapper._input_count >= len(self._scenario._eval_agent_ids):
@@ -70,13 +67,13 @@ class RuntimeRL(Runtime):
       self._world.step(self._step_time)
       if self._render:
         self.render()
+
+    # print(controlled_agent_id)
     
     # TODO needs to know the agents id
     return self.snapshot(
       world=self._world,
-      controlled_agents=[
-        controlled_agent_id
-      ],
+      controlled_agents=controlled_agent_id,
       action=action)
 
   @property
@@ -102,11 +99,14 @@ class RuntimeRL(Runtime):
     Returns:
         (next_state, reward, done, info) -- RL tuple
     """
+    # print(controlled_agents)
     next_state = self._observer.observe(
       world=self._world,
-      agents_to_observe=controlled_agents)
+      agents_to_observe=[controlled_agents])
     # What should the return be
-    reward, done, info = self._evaluator.evaluate(world=world, action=action)
+    reward, done, info = self._evaluator.evaluate(
+      world=world, action=action, agent_id=controlled_agents)
+    # print(reward)
     return next_state, reward, done, info
 
 

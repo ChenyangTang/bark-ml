@@ -128,7 +128,6 @@ class SACRunner(TFARunner):
         # else:
         #   print("Now Ego-car will stay on the original lane")
         while not is_terminal:
-          # TODO(@hart); make generic for multi agent planning
           for i, agent in enumerate(self._agent):
             action_step = agent._eval_policy.action(
               ts.transition(state, reward=0.0, discount=1.0))

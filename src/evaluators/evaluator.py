@@ -11,7 +11,7 @@ class StateEvaluator(ABC):
     self._params = params
     self._evaluators = {}
 
-  def evaluate(self, world, action):
+  def evaluate(self, world, action, agent_id):
     """Evaluates the passed world
     
     Arguments:
@@ -23,18 +23,12 @@ class StateEvaluator(ABC):
     eval_results = None
     reward = 0.
     done = False
-    # TODO(@hart): make generic for multi agent planning
     if self._eval_agent[0] in world.agents and self._eval_agent[1] in world.agents:
       eval_results = world.evaluate()
-      reward, done, eval_results = self._evaluate(world, eval_results, action)
+      reward, done, eval_results = self._evaluate(world, eval_results, action, agent_id)
     return reward, done, eval_results
 
   def reset(self, world, agents_to_evaluate):
-    # if len(agents_to_evaluate) != 1:
-    #   raise ValueError("Invalid number of agents provided for GoalReached \
-    #                     evaluation, number= {}" \
-    #                     .format(len(agents_to_evaluate)))
-    # TODO(@hart); make generic for multi agent planning
     self._eval_agent = agents_to_evaluate[0]
     world.clear_evaluators()
     self._add_evaluators()
