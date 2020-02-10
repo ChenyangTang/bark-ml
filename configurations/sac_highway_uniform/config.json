@@ -36,7 +36,7 @@
                 30
               ],
               "GoalNumber": [
-                3
+                1
               ],
               "GoalStateLimits": [
                 0.8,
@@ -44,8 +44,8 @@
                 0
               ],
               "VehicleDistanceRange": [
-                  20,
-                  30
+                  40,
+                  50
               ],
               "VehicleVelocityRange": [
                   10,

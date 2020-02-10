@@ -53,12 +53,10 @@ class RuntimeRL(Runtime):
     self._world = self._action_wrapper.action_to_behavior(world=self._world,
                                                           action=action)
     # 1. move the agent we set the action for
-    # print(self._action_wrapper._input_count)
-    
     controlled_agent_id = self._scenario._eval_agent_ids[self._action_wrapper._input_count-1]
     self._world.stepAgent(self._step_time, controlled_agent_id)
 
-    # TODO(@all): length of agents
+    # length of agents
     if self._action_wrapper._input_count >= len(self._scenario._eval_agent_ids):
       # CANNOT STEP WORLD IF NOT ALL ACTIONS ARE SET
       self._action_wrapper._input_count = 0
@@ -68,8 +66,6 @@ class RuntimeRL(Runtime):
       if self._render:
         self.render()
 
-    # print(controlled_agent_id)
-    
     # TODO needs to know the agents id
     return self.snapshot(
       world=self._world,
@@ -99,6 +95,7 @@ class RuntimeRL(Runtime):
     Returns:
         (next_state, reward, done, info) -- RL tuple
     """
+    # print("snapshot")
     # print(controlled_agents)
     next_state = self._observer.observe(
       world=self._world,
@@ -106,7 +103,6 @@ class RuntimeRL(Runtime):
     # What should the return be
     reward, done, info = self._evaluator.evaluate(
       world=world, action=action, agent_id=controlled_agents)
-    # print(reward)
     return next_state, reward, done, info
 
 

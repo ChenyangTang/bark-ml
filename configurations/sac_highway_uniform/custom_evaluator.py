@@ -27,7 +27,7 @@ class CustomEvaluator(GoalReached):
   def _add_evaluators(self):
     self._evaluators["goal_reached"] = EvaluatorGoalReached()
     self._evaluators["drivable_area"] = EvaluatorDrivableArea()
-    # print("here")
+    # print("add_evaluators")
     # print(self._eval_agent)
     self._evaluators["collision_agent_0"] = \
       EvaluatorCollisionEgoAgent(self._eval_agent[0])
@@ -85,7 +85,7 @@ class CustomEvaluator(GoalReached):
     success = eval_results["goal_reached"]
     distance = self._distance_to_goal(world, agent_id)
     velocity_cost = self.deviation_velocity(world, agent_id)
-    # print("there")
+    # print("_evaluate")
     # print(agent_id)
     if agent_id == self._eval_agent[0]: collision = eval_results["collision_agent_0"]
     else: collision = eval_results["collision_agent_1"]

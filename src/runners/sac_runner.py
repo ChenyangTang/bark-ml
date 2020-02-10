@@ -66,13 +66,14 @@ class SACRunner(TFARunner):
         state = self._unwrapped_runtime.reset()
         is_terminal = False
         while not is_terminal:
-          for i, agent in enumerate(self._agent):
-            action_step = agent._eval_policy.action(
-              ts.transition(state, reward=0.0, discount=1.0))
-            state, reward, is_terminal, _ = self._unwrapped_runtime.step(
-              action_step.action.numpy())
-            rewards.append(reward)
-            steps.append(1)
+          action_step_0 = self._agent[0]._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
+          action_step_1 = self._agent[1]._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
+          state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step_0.action.numpy())
+          rewards.append(reward)
+          steps.append(1)
+          state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step_1.action.numpy())
+          rewards.append(reward)
+          steps.append(1)
     mean_reward = np.sum(np.array(rewards))/len(rewards)
     mean_steps = np.sum(np.array(steps))/len(steps)
     tf.summary.scalar("mean_reward",
@@ -91,16 +92,14 @@ class SACRunner(TFARunner):
   def _train(self):
     """Trains the agent as specified in the parameter file
     """
-    #iterator = [iter(agent._dataset) for agent in self._agent]
     iterator = []
     for agent in self._agent:
       iterator.append(iter(agent._dataset))
-    print(iterator)
     for _ in range(0, self._params["ML"]["Runner"]["number_of_collections"]):
 
       global_iteration = self._agent[0]._agent._train_step_counter.numpy()
+
       # we collect experiences based on the SacAgent
-      
       for i in range(0, len(self._collection_driver)):
         # this no matter what always outputs an action 
         self._collection_driver[i].run()
@@ -123,16 +122,10 @@ class SACRunner(TFARunner):
         # print("NEW EPISODE")
         state = self._unwrapped_runtime.reset()
         is_terminal = False
-        # if self._params["ML"]["Maneuver"]["lane_change"] == 1:
-        #   print("Now Ego-car will change the lane")
-        # else:
-        #   print("Now Ego-car will stay on the original lane")
         while not is_terminal:
-          for i, agent in enumerate(self._agent):
-            action_step = agent._eval_policy.action(
-              ts.transition(state, reward=0.0, discount=1.0))
-            state, reward, is_terminal, _ = self._unwrapped_runtime.step(
-              action_step.action.numpy())
+          action_step_0 = self._agent[0]._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
+          action_step_1 = self._agent[1]._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
+          state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step_0.action.numpy())
+          state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step_1.action.numpy())
           
-          # print(reward)
           self._unwrapped_runtime.render()

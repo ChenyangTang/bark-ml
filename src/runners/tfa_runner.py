@@ -58,8 +58,6 @@ class TFARunner(BaseRunner):
         policy=agent._agent.collect_policy,
         observers=[agent._replay_buffer.add_batch],
         num_episodes=self._params["ML"]["Runner"]["initial_collection_steps"]))
-    # self._initial_collection_driver.run = common.function(
-    #   self._initial_collection_driver.run)
 
   def get_collection_driver(self):
     """Sets the collection driver for tf-agents.
@@ -71,14 +69,11 @@ class TFARunner(BaseRunner):
         policy=agent._agent.collect_policy, # this is the agents policy
         observers=[agent._replay_buffer.add_batch],
         num_steps = 1
-        # num_episodes=self._params["ML"]["Runner"]["collection_episodes_per_cycle"]
         ))
-      # self._collection_driver[-1].run = common.function(self._collection_driver[-1].run)
 
   def collect_initial_episodes(self):
     """Function that collects the initial episodes
     """
-    # pass
     for i in range(len(self._initial_collection_driver)):
       self._initial_collection_driver[i].run()
 
@@ -87,7 +82,7 @@ class TFARunner(BaseRunner):
        This enables a seamingless integration with TensorBoard.
     """
     # collect initial episodes
-    # self.collect_initial_episodes()
+    self.collect_initial_episodes()
     # main training cycle
     if self._summary_writer is not None:
       with self._summary_writer.as_default():
@@ -128,24 +123,15 @@ class TFARunner(BaseRunner):
   def visualize(self, num_episodes=1):
     # Ticket (https://github.com/tensorflow/agents/issues/59) recommends
     # to do the rendering in the original environment
-    # from configuration import SACHighwayConfiguration
     if self._unwrapped_runtime is not None:
       for _ in range(0, num_episodes):
         state = self._unwrapped_runtime.reset()
         is_terminal = False
         suc_time = self._params["ML"]["Maneuver"]["success"]
-        if self._params["ML"]["Maneuver"]["lane_change"] == 1:
-          print("Now Ego-car will change the lane")
-        else:
-          print("Now Ego-car will stay on the original lane")
 
         while not is_terminal:
-          print(state)
           action_step_0 = self._agent[0]._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
           action_step_1 = self._agent[1]._eval_policy.action(ts.transition(state, reward=0.0, discount=1.0))
-          print(action_step_0)
-          # TODO(@hart); make generic for multi agent planning
           state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step_0.action.numpy())
           state, reward, is_terminal, _ = self._unwrapped_runtime.step(action_step_1.action.numpy())
-          print(reward)
           self._unwrapped_runtime.render()
