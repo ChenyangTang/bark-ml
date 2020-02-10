@@ -29,7 +29,7 @@ class StateEvaluator(ABC):
     return reward, done, eval_results
 
   def reset(self, world, agents_to_evaluate):
-    self._eval_agent = agents_to_evaluate[0]
+    self._eval_agent = agents_to_evaluate
     world.clear_evaluators()
     self._add_evaluators()
     for key, evaluator in self._evaluators.items():

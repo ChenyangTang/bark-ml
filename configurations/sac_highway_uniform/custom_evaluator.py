@@ -1,7 +1,7 @@
 import numpy as np
 from bark.world.evaluation import \
   EvaluatorGoalReached, EvaluatorCollisionAgents, EvaluatorCollisionEgoAgent, \
-  EvaluatorCollisionDrivingCorridor, EvaluatorStepCount, EvaluatorDrivableArea
+  EvaluatorStepCount, EvaluatorDrivableArea
 from modules.runtime.commons.parameters import ParameterServer
 from bark.geometry import *
 from bark.models.dynamic import StateDefinition
@@ -27,10 +27,12 @@ class CustomEvaluator(GoalReached):
   def _add_evaluators(self):
     self._evaluators["goal_reached"] = EvaluatorGoalReached()
     self._evaluators["drivable_area"] = EvaluatorDrivableArea()
-    # self._evaluators["ego_collision"] = \
-    #   EvaluatorCollisionEgoAgent(self._eval_agent)
+    # print("here")
+    # print(self._eval_agent)
     self._evaluators["collision_agent_0"] = \
-      EvaluatorCollisionAgents()
+      EvaluatorCollisionEgoAgent(self._eval_agent[0])
+    self._evaluators["collision_agent_1"] = \
+      EvaluatorCollisionEgoAgent(self._eval_agent[1])
     self._evaluators["step_count"] = EvaluatorStepCount()
 
   def _distance_to_goal(self, world, agent_id):
@@ -82,19 +84,23 @@ class CustomEvaluator(GoalReached):
 
     success = eval_results["goal_reached"]
     distance = self._distance_to_goal(world, agent_id)
-    collision = eval_results["collision_agent_0"]
+    velocity_cost = self.deviation_velocity(world, agent_id)
+    # print("there")
+    # print(agent_id)
+    if agent_id == self._eval_agent[0]: collision = eval_results["collision_agent_0"]
+    else: collision = eval_results["collision_agent_1"]
     step_count = eval_results["step_count"]
     drivable_area = eval_results["drivable_area"]
 
     # determine whether the simulation should terminate
-    if success or collision or step_count > self._max_steps: # or drivable_area:
+    if success or collision or step_count > self._max_steps:# or drivable_area:
       done = True
       
     # calculate reward
     reward = collision * self._collision_penalty + \
       - 0.1*distance + \
-      success * self._goal_reward - self.deviation_velocity(world, agent_id)
-      #+ drivable_area * self._collision_penalty 
+      success * self._goal_reward - velocity_cost 
+      # + drivable_area * self._collision_penalty 
 
     return reward, done, eval_results
     
